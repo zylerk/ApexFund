@@ -1,34 +1,33 @@
 
-import time
-from selenium import webdriver
 
-options = webdriver.ChromeOptions()
-options.add_argument('headless')
-options.add_argument('window-size=1920x1080')
+import requests
+from bs4 import BeautifulSoup as bs
+from html.parser import HTMLParser
 
-driver = webdriver.Chrome('D:\Google 드라이브\Apps\chromedriver', chrome_options=options)
-driver.implicitly_wait(3)
+str = 'http://pub.insure.or.kr/Product.do?area=varinsu&wbid=VarInsu&cmd=varfund_info_t2&s_bsns_cd=2&fund_cd=KLVL0200F11&std_dt=2018-01-19&sk=11a0b7cd58d09b689e62293b4490e8d3822483b754cddb91935dc1b8d16aa70'
+response = requests.get(str)
+html = response.text
 
-driver.get('https://nid.naver.com/nidlogin.login')
-#driver.get('https://naver.com')
+#print(response.text)
 
-input_id = driver.find_element_by_css_selector('#id')
-input_pw = driver.find_element_by_css_selector('#pw')
+#soup = bs(html, 'html.parser')
+soup = bs(html, 'lxml')
 
-login_button = driver.find_element_by_css_selector('#frmNIDLogin > fieldset > span > input[type="submit"]')
+#title = soup.select('body > div.frontpage > div.onsky > div > div > p')
+data = soup.select('div.pop_over_table > table.listB > tbody > tr')
 
-input_id.send_keys('zylerk')
-input_pw.send_keys('stan97#')
-login_button.click()
-body > div.container > div:nth-child(1) > div.col-md-9.content > ul:nth-child(3) > li:nth-child(15) > a
-url = 'http://cafe.naver.com/joonggonara?iframe_url=/ArticleList.nhn%3Fsearch.clubid=10050146%26search.menuid=334%26search.boardtype=L'
-driver.get(url)
-time.sleep(3)
-driver.switch_to_frame('cafe_main')
-selector = '#main-area > div:nth-child(8) > form > table > tbody > tr > td.board'
-contents = driver.find_element_by_css_selector(selector)
+#print(data[0].text)
 
-for post  in contents:
-    print(post.text)
+parser = HTMLParser()
 
-driver.quit()
+for each_data in data:
+    #print (each_data.text)
+    #parser.feed(each_data)
+    sDate = each_data.contents[1].contents[0]
+    sNAV = each_data.contents[3].contents[0]
+    sPrice = each_data.contents[5].contents[0]
+    sReturn = each_data.contents[7].contents[0]
+
+
+
+

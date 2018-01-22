@@ -22,7 +22,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ABL_F00429.py" />
-    <Compile Include="module1.py">
+    <Compile Include="db_insert.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="simple.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="webdriver.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
