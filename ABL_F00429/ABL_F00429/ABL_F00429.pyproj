@@ -22,6 +22,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ABL_F00429.py" />
+    <Compile Include="Base.py" />
+    <Compile Include="Database.py" />
     <Compile Include="db_insert.py">
       <SubType>Code</SubType>
     </Compile>

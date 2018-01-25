@@ -1,9 +1,15 @@
 
 import datetime
+import re
 import requests
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from Database import DB
+
+db = DB()
+db.connect()
+table_fundcode = db.get_fundtable()
 
 options = webdriver.ChromeOptions()
 options.add_argument('headless')
@@ -37,7 +43,7 @@ input_fund_name.send_keys('팀챌린지')
 qry_button.click()
 driver.implicitly_wait(3)
 
-for i in range(1, 7):
+for i in range(1, 8):
     sQry = '#tblList_header > tbody > tr:nth-child({}) > td.left > a'.format(i)    
     qry_fund = driver.find_element_by_css_selector(sQry)
     qry_fund.click()
@@ -48,18 +54,21 @@ for i in range(1, 7):
     #str = 'http://pub.insure.or.kr/Product.do?area=varinsu&wbid=VarInsu&cmd=varfund_info_t2&s_bsns_cd=2&fund_cd=KLVL0200F11&std_dt=2018-01-19&sk=11a0b7cd58d09b689e62293b4490e8d3822483b754cddb91935dc1b8d16aa70'
     #response = requests.get(str)
 
-    addr = driver.current_url
+    addr = driver.current_url    
     addr = addr.replace("t1", "t2")
     driver.get(addr)
     html = driver.page_source
     soup = bs(html, 'lxml')
     data = soup.select('div.pop_over_table > table.listB > tbody > tr')
 
+    db_table = table_fundcode[re.search('(?<=fund_cd=)\w+', addr).group(0)]
+
     for each_data in data:    
         sDate = each_data.contents[1].contents[0]
         sNAV = each_data.contents[3].contents[0]
         sPrice = each_data.contents[5].contents[0]
         sReturn = each_data.contents[7].contents[0]
+        db.insert_item(db_table, sDate, sNAV, sPrice, sReturn)
 
     driver.close()
     driver.switch_to.window(windows[0])
