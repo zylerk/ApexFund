@@ -75,6 +75,7 @@ for i in range(1, 8):
 
 driver.close()
 
+print('complete')
 
 
 
