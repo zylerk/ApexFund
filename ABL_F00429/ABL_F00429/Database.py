@@ -67,6 +67,31 @@ class DB(BaseClass):
 
         return self.ok()        
 
+    def update_AA(self, fundcode, fundname, structAA):
+        if self.cursor == 0:
+            return self.error('connection error: no cursor')                    
+
+        try:            
+            sQry = (" update Asset_Allocation set "
+                " Equity={v_equity}, Bond={v_bond}, Fund={v_fund}, Cash={v_cash}, ETC={v_etc} "
+                ",Domestic_Equity={v_dom_eq}, Domestic_Bond={v_dom_bond}, Domestic_Equity_Mix={v_dom_eq_mix}, Domestic_Bond_Mix={v_dom_bond_mix}"
+                ",Domestic_MMF = {v_dom_mmf}, Domestic_ETC={v_dom_etc}, Overseas_Equity={v_over_eq}, Overseas_Bond={v_over_bond}"
+                ",Overseas_Commodity={v_over_comdty}, Overseas_REIT={v_over_reit}, Overseas_ETC={v_over_etc}"
+                " where Code='{v_code}' "
+                .format(v_equity = structAA['Equity'], v_bond=structAA['Bond'], v_fund=structAA['Fund'], v_cash=structAA['Cash'], v_etc=structAA['ETC'],
+                        v_dom_eq=structAA['Domestic_Equity'], v_dom_bond=structAA['Domestic_Bond'],v_dom_eq_mix=structAA['Domestic_Equity_Mix'],
+                        v_dom_bond_mix=structAA['Domestic_Bond_Mix'],v_dom_mmf=structAA['Domestic_MMF'],v_dom_etc=structAA['Domestic_ETC'],
+                        v_over_eq=structAA['Overseas_Equity'],v_over_bond=structAA['Overseas_Bond'],v_over_comdty=structAA['Overseas_Commodity'],
+                        v_over_reit=structAA['Overseas_REIT'],v_over_etc=structAA['Overseas_ETC'], v_code=fundcode )
+                )
+
+            self.cursor.execute(sQry)
+            self.conn.commit()
+        except:
+            return self.error('update error')                                    
+
+        return self.ok()        
+
     def insert_price(self, price,  allow_rate = -1):
         #spread = price['BTC']['bithumb']['USD'] / price['BTC']['bittrex']['USD'] - 1
         #gap = price['BTC']['bithumb']['USD'] - price['BTC']['bittrex']['USD']

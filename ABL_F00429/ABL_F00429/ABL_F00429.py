@@ -34,7 +34,7 @@ qry_button = driver.find_element_by_css_selector('#contents > div.search_area > 
 
 input_std_dt.clear()
 
-date = datetime.datetime.now() + datetime.timedelta(days=-1)
+date = datetime.datetime.now() + datetime.timedelta(days=-2)
 sDate = date.strftime('%Y-%m-%d')
 #input_std_dt.send_keys('2018-01-23')
 input_std_dt.send_keys(sDate)
@@ -55,20 +55,58 @@ for i in range(1, 8):
     #response = requests.get(str)
 
     addr = driver.current_url    
-    addr = addr.replace("t1", "t2")
+    fundcode = re.search('(?<=fund_cd=)\w+', addr).group(0)
+    fundname = table_fundcode[fundcode]
+        
+    # asset allocation 정보 저장
+    addr = addr.replace("t1", "t3")
+    driver.get(addr)
+    html2 = driver.page_source
+    soup2 = bs(html2, 'lxml')
+    structAA = {}
+
+    data = soup2.select('#pop_contents > div:nth-of-type(2) > div.width48p.f_right > table > tbody > tr > td')    
+    structAA['Equity'] = data[0].contents[0]
+    structAA['Bond'] = data[1].contents[0]
+    structAA['Fund'] = data[2].contents[0]
+    structAA['Cash'] = data[3].contents[0]
+    structAA['ETC'] = data[4].contents[0]
+    
+    data = soup2.select('#pop_contents > div:nth-of-type(3) > div.width40p.f_left.mgnRght8 > table > tbody > tr > td')
+    structAA['Domestic_Equity'] = data[5].contents[0]
+    structAA['Overseas_Equity'] = data[7].contents[0]
+
+    structAA['Domestic_Bond'] = data[9].contents[0]
+    structAA['Overseas_Bond'] = data[11].contents[0]
+
+    structAA['Domestic_Equity_Mix'] = data[13].contents[0]
+    structAA['Overseas_Commodity'] = data[15].contents[0]
+    
+    structAA['Domestic_Bond_Mix'] = data[17].contents[0]
+    structAA['Overseas_REIT'] = data[19].contents[0]
+
+    structAA['Domestic_MMF'] = data[21].contents[0]
+    structAA['Overseas_ETC'] = data[23].contents[0]
+
+    structAA['Domestic_ETC'] = data[25].contents[0]   
+    db.update_AA(fundcode,fundname, structAA)
+
+    # 주가 정보 저장
+    addr = addr.replace("t3", "t2")
     driver.get(addr)
     html = driver.page_source
     soup = bs(html, 'lxml')
     data = soup.select('div.pop_over_table > table.listB > tbody > tr')
-
-    db_table = table_fundcode[re.search('(?<=fund_cd=)\w+', addr).group(0)]
+       
 
     for each_data in data:    
         sDate = each_data.contents[1].contents[0]
         sNAV = each_data.contents[3].contents[0]
         sPrice = each_data.contents[5].contents[0]
         sReturn = each_data.contents[7].contents[0]
-        db.insert_item(db_table, sDate, sNAV, sPrice, sReturn)
+        db.insert_item(fundname, sDate, sNAV, sPrice, sReturn)
+
+    
 
     driver.close()
     driver.switch_to.window(windows[0])
