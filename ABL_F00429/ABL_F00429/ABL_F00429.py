@@ -35,7 +35,8 @@ def UpdateFundInfo(name):
     
     input_std_dt.clear()
     
-    date = datetime.datetime.now() + datetime.timedelta(days=-2)
+    today =  datetime.datetime.now() 
+    date = today + datetime.timedelta(days= -2 -today.weekday())
     sDate = date.strftime('%Y-%m-%d')
     #input_std_dt.send_keys('2018-01-23')
     input_std_dt.send_keys(sDate)
@@ -44,7 +45,10 @@ def UpdateFundInfo(name):
     qry_button.click()
     driver.implicitly_wait(3)
     
-    for i in range(1, 8):
+    list_item = bs(driver.page_source, 'lxml').select('#tblList_header > tbody > tr')
+    len_item = len(list_item)
+
+    for i in range(1, len_item+1):
         sQry = '#tblList_header > tbody > tr:nth-child({}) > td.left > a'.format(i)    
         qry_fund = driver.find_element_by_css_selector(sQry)
         qry_fund.click()  # new window open
