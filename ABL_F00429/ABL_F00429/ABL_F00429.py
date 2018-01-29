@@ -1,6 +1,7 @@
 
 import datetime
 import re
+import os
 import requests
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver
@@ -17,7 +18,7 @@ def UpdateFundInfo(name):
     options.add_argument('window-size=1920x1080')
     
     #driver = webdriver.Chrome('D:\Google 드라이브\Apps\chromedriver', chrome_options=options)
-    driver = webdriver.Chrome('D:\Google 드라이브\Apps\chromedriver')
+    driver = webdriver.Chrome(os.getcwd()+'\chromedriver')
     driver.implicitly_wait(3)
     
     addr = 'http://pub.insure.or.kr/Product.do?area=varinsu&wbid=VarInsu&cmd=varfund_list_B&s_bsns_cd=2&scrn_id=UPD200001'
@@ -60,7 +61,7 @@ def UpdateFundInfo(name):
         #response = requests.get(str)
     
         addr = driver.current_url    
-        fundcode = re.search('(?<=fund_cd=)\w+', addr).group(0)
+        fundcode = re.search('(?<=fund_cd=)\w+', addr).group(0)        
         fundname = table_fundcode.get(fundcode)
         if(fundname == None):
             driver.close()
