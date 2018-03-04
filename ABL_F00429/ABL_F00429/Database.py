@@ -19,7 +19,9 @@ class DB(BaseClass):
 
     def connect(self):
         try:
-            self.conn = pymysql.connect(host='localhost', user='apex', password='tlsgks01#DB', database='F00429', charset='utf8')
+            #self.conn = pymysql.connect(host='localhost', user='apex', password='tlsgks01#DB', database='F00429', charset='utf8')
+            self.conn = pymysql.connect(host='hulis.com', user='apexfund' , password='tlsgks01#M', database='F00429', charset='utf8')
+
             self.cursor = self.conn.cursor()
             #self.fundtable = self.get_fundtable()
         except:                        
